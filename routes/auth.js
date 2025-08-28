@@ -27,4 +27,38 @@ router.post("/register", async (req, res) => {
     }
 });
 
+
+//endpoint to login a user
+router.post("/login", async (req, res) => {
+    const {email, password } = req.body;
+    
+    try {
+        const user = await User.findByEmail(email);
+        if(!user) return res.status(404).json({ message: "User not found. "});
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch)
+        return res.status(404).json({ message: "Wrong Credentials. "});
+
+        const token = jwt.sign(
+            {id: user.id, status: user.status},
+            process.env.JWT_SECRET,
+            {expiresIn: "1h"}
+        )
+
+        res.json({
+            token,
+            user:{
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                status: user.status,
+                created_at: user.created_at,
+            }
+        })
+    } catch (error) {
+        res.status(500).json({error: error.message});
+    }
+})
+
 module.exports = router;
