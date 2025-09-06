@@ -12,6 +12,11 @@ const waiter = require("./routes/waiter");
 const products = require("./routes/products");
 const orders = require("./routes/orders");
 
+const connectDB = require("./config/mongo");
+connectDB();
+
+const orderLogRoute = require("./routes/orderLogs");
+
 const app = express();
 
 app.use(cors({ origin: "http://localhost:5173" }));
@@ -23,6 +28,7 @@ app.use("/api/tablesPage", tablesPage);
 app.use("/api/waiter", waiter);
 app.use("/api/products", products);
 app.use("/api/orders", orders);
+app.use("/api/orderLogs", orderLogRoute);
 
 const PORT = process.env.PORT || 8095;
 

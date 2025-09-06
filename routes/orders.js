@@ -35,6 +35,16 @@ router.post("/", async (req, res) => {
 
     const newOrder = result.rows[0];
 
+    //Log ne MongoDB
+    const OrderLog = require("../models/OrderLog");
+    await OrderLog.create({
+      orderId: newOrder.id,
+      table_number: newOrder.table_number,
+      waiter: newOrder.waiter,
+      items: newOrder.items,
+      status: newOrder.status
+    });
+
     //socket
     const io = req.app.get("io");
     if (io) io.emit("newOrder", newOrder);
